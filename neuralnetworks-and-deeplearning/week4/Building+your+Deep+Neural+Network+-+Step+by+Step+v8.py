@@ -920,7 +920,7 @@ def L_model_backward(AL, Y, caches):
         ### START CODE HERE ### (approx. 5 lines)
         current_cache = caches[l]
         dA_prev_temp, dW_temp, db_temp = linear_activation_backward(grads["dA"+str(l+1)], current_cache, "relu")
-        grads["dA" + str(l + 1)] = dA_prev
+        grads["dA" + str(l + 1)] = dA_prev_temp
         grads["dW" + str(l + 1)] = dW_temp
         grads["db" + str(l + 1)] = db_temp
         ### END CODE HERE ###
