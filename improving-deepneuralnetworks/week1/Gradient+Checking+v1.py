@@ -11,7 +11,7 @@
 # 
 # Let's do it!
 
-# In[ ]:
+# In[1]:
 
 # Packages
 import numpy as np
@@ -50,7 +50,7 @@ from gc_utils import sigmoid, relu, dictionary_to_vector, vector_to_dictionary, 
 # 
 # **Exercise**: implement "forward propagation" and "backward propagation" for this simple function. I.e., compute both $J(.)$ ("forward propagation") and its derivative with respect to $\theta$ ("backward propagation"), in two separate functions. 
 
-# In[ ]:
+# In[2]:
 
 # GRADED FUNCTION: forward_propagation
 
@@ -67,13 +67,13 @@ def forward_propagation(x, theta):
     """
     
     ### START CODE HERE ### (approx. 1 line)
-    J = None
+    J = theta*x
     ### END CODE HERE ###
     
     return J
 
 
-# In[ ]:
+# In[3]:
 
 x, theta = 2, 4
 J = forward_propagation(x, theta)
@@ -91,7 +91,7 @@ print ("J = " + str(J))
 
 # **Exercise**: Now, implement the backward propagation step (derivative computation) of Figure 1. That is, compute the derivative of $J(\theta) = \theta x$ with respect to $\theta$. To save you from doing the calculus, you should get $dtheta = \frac { \partial J }{ \partial \theta} = x$.
 
-# In[ ]:
+# In[4]:
 
 # GRADED FUNCTION: backward_propagation
 
@@ -108,13 +108,13 @@ def backward_propagation(x, theta):
     """
     
     ### START CODE HERE ### (approx. 1 line)
-    dtheta = None
+    dtheta = x
     ### END CODE HERE ###
     
     return dtheta
 
 
-# In[ ]:
+# In[5]:
 
 x, theta = 2, 4
 dtheta = backward_propagation(x, theta)
@@ -149,7 +149,7 @@ print ("dtheta = " + str(dtheta))
 # - If this difference is small (say less than $10^{-7}$), you can be quite confident that you have computed your gradient correctly. Otherwise, there may be a mistake in the gradient computation. 
 # 
 
-# In[ ]:
+# In[30]:
 
 # GRADED FUNCTION: gradient_check
 
@@ -168,22 +168,22 @@ def gradient_check(x, theta, epsilon = 1e-7):
     
     # Compute gradapprox using left side of formula (1). epsilon is small enough, you don't need to worry about the limit.
     ### START CODE HERE ### (approx. 5 lines)
-    thetaplus = None                               # Step 1
-    thetaminus = None                              # Step 2
-    J_plus = None                                  # Step 3
-    J_minus = None                                 # Step 4
-    gradapprox = None                              # Step 5
+    thetaplus = theta + epsilon                               # Step 1
+    thetaminus = theta - epsilon                              # Step 2
+    J_plus = forward_propagation(x, thetaplus)                # Step 3
+    J_minus = forward_propagation(x, thetaminus)              # Step 4
+    gradapprox = (J_plus-J_minus)/(2*epsilon)                 # Step 5
     ### END CODE HERE ###
     
     # Check if gradapprox is close enough to the output of backward_propagation()
     ### START CODE HERE ### (approx. 1 line)
-    grad = None
+    grad = backward_propagation(x, theta)
     ### END CODE HERE ###
     
     ### START CODE HERE ### (approx. 1 line)
-    numerator = None                               # Step 1'
-    denominator = None                             # Step 2'
-    difference = None                              # Step 3'
+    numerator = np.linalg.norm(gradapprox-grad)                           # Step 1'
+    denominator = np.linalg.norm(gradapprox-0) + np.linalg.norm(grad-0)   # Step 2'
+    difference = numerator/denominator                                    # Step 3'
     ### END CODE HERE ###
     
     if difference < 1e-7:
@@ -194,7 +194,7 @@ def gradient_check(x, theta, epsilon = 1e-7):
     return difference
 
 
-# In[ ]:
+# In[31]:
 
 x, theta = 2, 4
 difference = gradient_check(x, theta)
@@ -223,7 +223,7 @@ print("difference = " + str(difference))
 # 
 # Let's look at your implementations for forward propagation and backward propagation. 
 
-# In[ ]:
+# In[8]:
 
 def forward_propagation_n(X, Y, parameters):
     """
@@ -272,7 +272,7 @@ def forward_propagation_n(X, Y, parameters):
 
 # Now, run backward propagation.
 
-# In[ ]:
+# In[34]:
 
 def backward_propagation_n(X, Y, cache):
     """
@@ -296,13 +296,13 @@ def backward_propagation_n(X, Y, cache):
     
     dA2 = np.dot(W3.T, dZ3)
     dZ2 = np.multiply(dA2, np.int64(A2 > 0))
-    dW2 = 1./m * np.dot(dZ2, A1.T) * 2
+    dW2 = 1./m * np.dot(dZ2, A1.T)
     db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
     
     dA1 = np.dot(W2.T, dZ2)
     dZ1 = np.multiply(dA1, np.int64(A1 > 0))
     dW1 = 1./m * np.dot(dZ1, X.T)
-    db1 = 4./m * np.sum(dZ1, axis=1, keepdims = True)
+    db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
     
     gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,
                  "dA2": dA2, "dZ2": dZ2, "dW2": dW2, "db2": db2,
@@ -343,7 +343,7 @@ def backward_propagation_n(X, Y, cache):
 # Thus, you get a vector gradapprox, where gradapprox[i] is an approximation of the gradient with respect to `parameter_values[i]`. You can now compare this gradapprox vector to the gradients vector from backpropagation. Just like for the 1D case (Steps 1', 2', 3'), compute: 
 # $$ difference = \frac {\| grad - gradapprox \|_2}{\| grad \|_2 + \| gradapprox \|_2 } \tag{3}$$
 
-# In[ ]:
+# In[35]:
 
 # GRADED FUNCTION: gradient_check_n
 
@@ -376,28 +376,28 @@ def gradient_check_n(parameters, gradients, X, Y, epsilon = 1e-7):
         # Compute J_plus[i]. Inputs: "parameters_values, epsilon". Output = "J_plus[i]".
         # "_" is used because the function you have to outputs two parameters but we only care about the first one
         ### START CODE HERE ### (approx. 3 lines)
-        thetaplus = None                                      # Step 1
-        thetaplus[i][0] = None                                # Step 2
-        J_plus[i], _ = None                                   # Step 3
+        thetaplus = np.copy(parameters_values)                                      # Step 1
+        thetaplus[i][0] += epsilon                                       # Step 2
+        J_plus[i], _ = forward_propagation_n(X, Y, vector_to_dictionary(thetaplus))   # Step 3
         ### END CODE HERE ###
         
         # Compute J_minus[i]. Inputs: "parameters_values, epsilon". Output = "J_minus[i]".
         ### START CODE HERE ### (approx. 3 lines)
-        thetaminus = None                                     # Step 1
-        thetaminus[i][0] = None                               # Step 2        
-        J_minus[i], _ = None                                  # Step 3
+        thetaminus = np.copy(parameters_values)                                       # Step 1
+        thetaminus[i][0] -= epsilon                                                   # Step 2        
+        J_minus[i], _ = forward_propagation_n(X, Y, vector_to_dictionary(thetaminus)) # Step 3
         ### END CODE HERE ###
         
         # Compute gradapprox[i]
         ### START CODE HERE ### (approx. 1 line)
-        gradapprox[i] = None
+        gradapprox[i] = (J_plus[i]-J_minus[i])/(2*epsilon)
         ### END CODE HERE ###
     
     # Compare gradapprox to backward propagation gradients by computing difference.
     ### START CODE HERE ### (approx. 1 line)
-    numerator = None                                           # Step 1'
-    denominator = None                                         # Step 2'
-    difference = None                                          # Step 3'
+    numerator = np.linalg.norm(gradapprox-grad)                                       # Step 1'
+    denominator = np.linalg.norm(gradapprox) + np.linalg.norm(grad)                   # Step 2'
+    difference = numerator/denominator                                                # Step 3'
     ### END CODE HERE ###
 
     if difference > 2e-7:
@@ -408,7 +408,7 @@ def gradient_check_n(parameters, gradients, X, Y, epsilon = 1e-7):
     return difference
 
 
-# In[ ]:
+# In[36]:
 
 X, Y, parameters = gradient_check_n_test_case()
 
