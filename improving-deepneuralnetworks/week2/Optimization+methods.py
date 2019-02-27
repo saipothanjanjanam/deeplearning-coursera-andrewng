@@ -68,8 +68,8 @@ def update_parameters_with_gd(parameters, grads, learning_rate):
     # Update rule for each parameter
     for l in range(L):
         ### START CODE HERE ### (approx. 2 lines)
-        parameters["W" + str(l+1)] -= learning_rate*grads["dW" + str(l+1)]
-        parameters["b" + str(l+1)] -= learning_rate*grads["db" + str(l+1)]
+        parameters["W" + str(l+1)] = parameters["W" + str(l+1)] - learning_rate*grads["dW" + str(l+1)]
+        parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate*grads["db" + str(l+1)]
         ### END CODE HERE ###
         
     return parameters
@@ -445,8 +445,8 @@ def update_parameters_with_momentum(parameters, grads, v, beta, learning_rate):
         v["dW" + str(l+1)] = beta*v["dW" + str(l+1)] + (1-beta)*grads['dW'+str(l+1)]
         v["db" + str(l+1)] = beta*v["db" + str(l+1)] + (1-beta)*grads['db'+str(l+1)]
         # update parameters
-        parameters["W" + str(l+1)] -= learning_rate*v["dW" + str(l+1)]
-        parameters["b" + str(l+1)] -= learning_rate*v["db" + str(l+1)]
+        parameters["W" + str(l+1)] = parameters["W" + str(l+1)] - learning_rate*v["dW" + str(l+1)]
+        parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate*v["db" + str(l+1)]
         ### END CODE HERE ###
         
     return parameters, v
